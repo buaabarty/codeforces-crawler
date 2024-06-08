@@ -17,6 +17,8 @@ NEWSPIDER_MODULE = 'codeforces_crawler.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'codeforces_crawler (+http://www.yourdomain.com)'
 
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+
 # Obey robots.txt rules
 # ROBOTSTXT_OBEY = True
 
@@ -43,6 +45,10 @@ DOWNLOAD_DELAY = 1
 #   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 #   'Accept-Language': 'en',
 # }
+DEFAULT_REQUEST_HEADERS = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en',
+}
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html

@@ -6,7 +6,6 @@ from twisted.internet import reactor
 
 item = CodeforcesCrawlerItem()
 
-
 class SubmissionsSpider(scrapy.Spider):
     name = "cf_submission"
     allowed_domains = ['codeforces.com']
@@ -21,7 +20,7 @@ class SubmissionsSpider(scrapy.Spider):
     # count_id = 0
 
     # Kiểm tra verdict mong muốn
-    # wanted_verdicts = ['RUNTIME_ERROR', 'OK']
+    wanted_verdicts = ['WRONG_ANSWER']
 
     with open('contest-info.csv', 'r') as f:
         contest_info = []
@@ -53,6 +52,7 @@ class SubmissionsSpider(scrapy.Spider):
     def parse(self, response):
         print("=================> Processing: ", response.url)
         submission_id_list = response.xpath('//tr/@data-submission-id').extract()
+        print(submission_id_list)
 
         for submission_id in submission_id_list:
 
@@ -89,9 +89,13 @@ class SubmissionsSpider(scrapy.Spider):
 
             submission_verdict = response.xpath(
                 '//tr[@data-submission-id=%s]/td[6]/span/@submissionverdict' % submission_id)[0].extract().strip()
-            # if submission_verdict not in self.wanted_verdicts:
-            #     continue
-
+            if submission_verdict not in self.wanted_verdicts:
+                continue
+            submission_text = response.xpath(
+                '//tr[@data-submission-id=%s]/td[6]/span/span/test()' % submission_id)[0].extract().strip()
+            print('========================')
+            print(submission_text)
+            
             code_link = 'https://codeforces.com' + (response.xpath(
                 '//tr[@data-submission-id=%s]/td[1]/a[contains(@href, "submission")]/@href' % submission_id)[
                                                         0].extract().strip())
