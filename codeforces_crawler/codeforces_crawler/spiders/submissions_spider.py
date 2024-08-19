@@ -6,12 +6,22 @@ from twisted.internet import reactor
 
 item = CodeforcesCrawlerItem()
 
+form_data = {
+    'csrf_token': 'cd1407296393164cf9ea14a3c890fe54',
+    'action': 'setupSubmissionFilter',
+    'frameProblemIndex': 'B',
+    'verdictName': 'WRONG_ANSWER',
+    'programTypeForInvoker': 'cpp.g++17',
+    'comparisonType': 'GREATER_OR_EQUAL',
+    'judgedTestCount': '4',
+}
+
 class SubmissionsSpider(scrapy.Spider):
     name = "cf_submission"
     allowed_domains = ['codeforces.com']
 
     # Lựa chọn ngôn ngữ chương trình muốn get về
-    wanted_languages = ['GNU C11']
+    wanted_languages = ['GNU C++11']
 
     # Số lượng tối đa cho mỗi chương trình
     # MAX = 5000
@@ -38,9 +48,9 @@ class SubmissionsSpider(scrapy.Spider):
         contest_url = info[1]
         contest_id = info[0]
         filename = str(contest_id) + '.csv'
-        with open('crawl-data/contest/' + filename, 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(['submit_id', 'user_name', 'code', 'problem', 'lang', 'verdict', 'contest_id'])
+        # with open('crawl-data/contest/' + filename, 'w') as f:
+        #     writer = csv.writer(f)
+        #     writer.writerow(['submit_id', 'user_name', 'code', 'problem', 'lang', 'verdict', 'contest_id'])
         # task_urls.append(contest_url)
         start_urls.append(contest_url)
 
@@ -53,9 +63,10 @@ class SubmissionsSpider(scrapy.Spider):
         print("=================> Processing: ", response.url)
         submission_id_list = response.xpath('//tr/@data-submission-id').extract()
         print(submission_id_list)
+        print('hey')
 
         for submission_id in submission_id_list:
-
+            print('hey', submission_id)
             # if self.count_A >= self.MAX and self.count_B >= self.MAX:
             #     break
 
@@ -70,8 +81,8 @@ class SubmissionsSpider(scrapy.Spider):
                 0].extract().strip()
 
             ###TODO: Processing program count A and B
-
-            if 'A' not in submission_problem[0] and 'B' not in submission_problem[0]:
+            print(submission_problem[0])
+            if 'D' not in submission_problem[0]:
                 continue
             # if 'A' in submission_problem[0] and self.count_A < self.MAX:
             #     self.count_A += 1
@@ -82,19 +93,21 @@ class SubmissionsSpider(scrapy.Spider):
 
             submission_lang = response.xpath('//tr[@data-submission-id=%s]/td[5]/text()' % submission_id)[
                 0].extract().strip()
-
             # Kiểm tra xem có nằm trong các ngôn ngữ mình mong muốn
-            if submission_lang not in self.wanted_languages:
+            if 'C++' not in submission_lang:
                 continue
 
             submission_verdict = response.xpath(
                 '//tr[@data-submission-id=%s]/td[6]/span/@submissionverdict' % submission_id)[0].extract().strip()
+            print(submission_verdict)
             if submission_verdict not in self.wanted_verdicts:
                 continue
             submission_text = response.xpath(
-                '//tr[@data-submission-id=%s]/td[6]/span/span/test()' % submission_id)[0].extract().strip()
+                '//tr[@data-submission-id=%s]/td[6]/span/span/span/text()' % submission_id)[0].extract().strip()
             print('========================')
             print(submission_text)
+            if int(submission_text) <= 2 or int(submission_text) > 37:
+                continue
             
             code_link = 'https://codeforces.com' + (response.xpath(
                 '//tr[@data-submission-id=%s]/td[1]/a[contains(@href, "submission")]/@href' % submission_id)[

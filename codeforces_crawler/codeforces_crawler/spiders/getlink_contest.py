@@ -6,6 +6,16 @@ from codeforces_crawler.items import GetlinkContestSpiderItem
 
 item = GetlinkContestSpiderItem()
 
+form_data = {
+    'csrf_token': 'cd1407296393164cf9ea14a3c890fe54',
+    'action': 'setupSubmissionFilter',
+    'frameProblemIndex': 'B',
+    'verdictName': 'WRONG_ANSWER',
+    'programTypeForInvoker': 'cpp.g++17',
+    'comparisonType': 'GREATER_OR_EQUAL',
+    'judgedTestCount': '4',
+}
+
 
 class GetlinkContestSpider(scrapy.Spider):
     name = 'getlink_contest'
@@ -35,7 +45,7 @@ class GetlinkContestSpider(scrapy.Spider):
             else:
                 continue
 
-        time.sleep(3)
+        # time.sleep(3)
 
         # generate next-page url
         if response.selector.xpath('//span[@class="inactive"]/text()').extract():
